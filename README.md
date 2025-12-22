@@ -60,6 +60,45 @@ messages:
     subtitle: "<yellow>Use <green>/link</green> to connect</yellow>"
 ```
 
+## Discord Bot Integration
+
+### Quick Setup
+
+Your Discord bot verifies codes by connecting to the same database:
+
+```python
+# /verify <code> command example
+cursor.execute("SELECT player_uuid FROM link_codes WHERE code = %s AND expires_at > NOW()", (code,))
+link_code = cursor.fetchone()
+
+if link_code:
+    cursor.execute("""
+        INSERT INTO account_links (player_uuid, discord_id, linked_at, is_manual)
+        VALUES (%s, %s, NOW(), FALSE)
+    """, (link_code['player_uuid'], str(interaction.user.id)))
+    cursor.execute("DELETE FROM link_codes WHERE code = %s", (code,))
+    # Tell user to reconnect!
+```
+
+### Database Structure
+
+```sql
+-- Temporary codes (5 min expiration)
+link_codes:
+  - player_uuid VARCHAR(36) PRIMARY KEY
+  - code VARCHAR(6) UNIQUE
+  - expires_at TIMESTAMP
+
+-- Permanent links
+account_links:
+  - player_uuid VARCHAR(36) PRIMARY KEY
+  - discord_id VARCHAR(20) UNIQUE
+  - linked_at TIMESTAMP
+  - is_manual BOOLEAN
+```
+
+**⚠️ Important**: Players MUST reconnect after verification to access the server.
+
 ## Commands
 
 ### Players
