@@ -1,0 +1,14 @@
+database:
+  type: SQLITE
+  
+  sqlite:
+    enabled: true
+  
+  mariadb:
+    enabled: false
+    host: localhost
+    port: 3306
+    database: gentlelink
+    username: root
+    password: password
+
