@@ -9,6 +9,7 @@ public class PermissionManager {
     public static final String LINK_LIST = "gentlelink.link.list";
     public static final String LINK_BYPASS = "gentlelink.link.bypass";
     public static final String UNLINK = "gentlelink.unlink";
+    public static final String UNLINK_OTHERS = "gentlelink.unlink.others";
     public static final String ADMIN = "gentlelink.admin";
 
     public static boolean hasPermission(CommandSender sender, String permission) {
@@ -37,6 +38,10 @@ public class PermissionManager {
 
     public static boolean canUnlink(CommandSender sender) {
         return hasPermission(sender, UNLINK);
+    }
+
+    public static boolean canUnlinkOthers(CommandSender sender) {
+        return hasPermission(sender, UNLINK_OTHERS);
     }
 
     public static boolean isAdmin(CommandSender sender) {

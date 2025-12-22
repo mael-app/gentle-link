@@ -12,3 +12,21 @@ database:
     username: root
     password: password
 
+messages:
+  not_linked:
+    chat: |
+      <gold><bold>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</bold></gold>
+      <yellow><bold>⚠ Compte Non Lié</bold></yellow>
+      <gold><bold>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</bold></gold>
+      
+      <white>Vous devez lier votre compte Discord</white>
+      <white>pour accéder au serveur.</white>
+      
+      <gray>Utilisez la commande</gray> <green><bold>/link</bold></green>
+      
+      <gold><bold>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</bold></gold>
+    
+    title: "<red><bold>⚠ Compte Non Lié</bold></red>"
+    subtitle: "<yellow>Utilisez <green>/link</green> pour vous connecter</yellow>"
+
+

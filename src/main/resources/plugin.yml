@@ -6,6 +6,7 @@ prefix: "§l§cGentle§6Link"
 load: STARTUP
 authors: [ mael.app ]
 description: A simple plugin to link your Minecraft account to your Discord account
+website: https://github.com/mael-app/gentle-link
 
 commands:
   link:
@@ -14,7 +15,7 @@ commands:
     aliases: [ lier ]
   unlink:
     description: Supprime la liaison entre votre compte Minecraft et Discord
-    usage: /<command>
+    usage: /<command> [playername]
     aliases: [ delier ]
 
 permissions:
@@ -36,6 +37,9 @@ permissions:
   gentlelink.unlink:
     description: Permet de délier son compte
     default: true
+  gentlelink.unlink.others:
+    description: Permet de délier le compte des autres joueurs
+    default: op
   gentlelink.admin:
     description: Donne accès à toutes les commandes d'administration
     default: op
@@ -43,6 +47,7 @@ permissions:
       gentlelink.link.info.others: true
       gentlelink.link.list: true
       gentlelink.link.bypass: true
+      gentlelink.unlink.others: true
 
 
 

@@ -7,6 +7,8 @@ A Minecraft Paper 1.21 plugin to link Minecraft and Discord accounts.
 - 🔗 Minecraft-Discord account linking via 6-character code
 - ⏱️ Temporary codes (5-minute expiration)
 - 🔒 Rate limiting to prevent spam (30 seconds between each generation)
+- 🚫 **Player restrictions for unlinked accounts** (blindness, movement blocking)
+- 💬 **Customizable messages** (chat, title, subtitle) using MiniMessage format
 - 👥 Administrative management (list, bypass, info)
 - 🎨 Elegant and interactive chat interface
 - 💾 SQLite and MariaDB support
@@ -43,6 +45,21 @@ database:
 - Use strong passwords for your database
 - Limit the database user's permissions to only the necessary tables
 
+### Messages Customization
+
+Customize messages shown to unlinked players using [MiniMessage](https://docs.advntr.dev/minimessage/format.html) format:
+
+```yaml
+messages:
+  not_linked:
+    chat: |
+      <gold><bold>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</bold></gold>
+      <yellow><bold>⚠ Account Not Linked</bold></yellow>
+      ...
+    title: "<red><bold>⚠ Account Not Linked</bold></red>"
+    subtitle: "<yellow>Use <green>/link</green> to connect</yellow>"
+```
+
 ## Commands
 
 ### Players
@@ -54,6 +71,7 @@ database:
 - `/link list` - List all linked accounts
 - `/link info <username>` - Display a player's linking information
 - `/link bypass <username> <discord_id>` - Create a manual link
+- `/unlink <username>` - Unlink another player's account
 
 ## Permissions
 
@@ -66,6 +84,7 @@ database:
 - `gentlelink.link.info.others` - View others' information
 - `gentlelink.link.list` - List all linked accounts
 - `gentlelink.link.bypass` - Create manual links
+- `gentlelink.unlink.others` - Unlink other players' accounts
 - `gentlelink.admin` - Full access (groups all admin permissions)
 
 ## Security

@@ -1,5 +1,6 @@
 package app.mael.gentleLink.command;
 
+import app.mael.gentleLink.Main;
 import app.mael.gentleLink.model.AccountLink;
 import app.mael.gentleLink.permission.PermissionManager;
 import app.mael.gentleLink.service.LinkService;
@@ -23,10 +24,12 @@ import java.util.UUID;
 
 public class LinkCommand implements CommandExecutor, TabCompleter {
     private final LinkService linkService;
+    private final Main plugin;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    public LinkCommand(LinkService linkService) {
+    public LinkCommand(LinkService linkService, Main plugin) {
         this.linkService = linkService;
+        this.plugin = plugin;
     }
 
     @Override
@@ -295,8 +298,17 @@ public class LinkCommand implements CommandExecutor, TabCompleter {
             
             Player onlinePlayer = Bukkit.getPlayer(playerUuid);
             if (onlinePlayer != null && onlinePlayer.isOnline()) {
+                plugin.getConnectionListener().removeRestrictions(onlinePlayer);
+                
+                onlinePlayer.sendMessage(Component.empty());
+                onlinePlayer.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GOLD, TextDecoration.BOLD));
                 onlinePlayer.sendMessage(Component.text("✓ ", NamedTextColor.GREEN, TextDecoration.BOLD)
-                    .append(Component.text("Votre compte a été lié manuellement à Discord!", NamedTextColor.GREEN)));
+                    .append(Component.text("Compte Lié!", NamedTextColor.GREEN, TextDecoration.BOLD)));
+                onlinePlayer.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GOLD, TextDecoration.BOLD));
+                onlinePlayer.sendMessage(Component.empty());
+                onlinePlayer.sendMessage(Component.text("Votre compte a été lié manuellement à Discord!", NamedTextColor.WHITE));
+                onlinePlayer.sendMessage(Component.text("Vous pouvez maintenant accéder au serveur.", NamedTextColor.GREEN));
+                onlinePlayer.sendMessage(Component.empty());
             }
         } catch (Exception e) {
             sender.sendMessage(Component.text("Erreur lors de la création de la liaison: " + e.getMessage(), NamedTextColor.RED));

@@ -1,24 +1,44 @@
 package app.mael.gentleLink.command;
 
+import app.mael.gentleLink.Main;
 import app.mael.gentleLink.permission.PermissionManager;
 import app.mael.gentleLink.service.LinkService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-public class UnlinkCommand implements CommandExecutor {
-    private final LinkService linkService;
+import java.util.ArrayList;
+import java.util.List;
 
-    public UnlinkCommand(LinkService linkService) {
+public class UnlinkCommand implements CommandExecutor, TabCompleter {
+    private final LinkService linkService;
+    private final Main plugin;
+
+    public UnlinkCommand(LinkService linkService, Main plugin) {
         this.linkService = linkService;
+        this.plugin = plugin;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        // /unlink <playername> (admin)
+        if (args.length > 0) {
+            if (!PermissionManager.canUnlinkOthers(sender)) {
+                sender.sendMessage(Component.text("Vous n'avez pas la permission de délier les autres joueurs.", NamedTextColor.RED));
+                return true;
+            }
+            handleUnlinkOther(sender, args[0]);
+            return true;
+        }
+        
+        // /unlink (self)
         if (!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Cette commande doit être exécutée par un joueur.", NamedTextColor.RED));
             return true;
@@ -29,10 +49,15 @@ public class UnlinkCommand implements CommandExecutor {
             return true;
         }
 
+        handleUnlinkSelf(player);
+        return true;
+    }
+
+    private void handleUnlinkSelf(Player player) {
         if (!linkService.isPlayerLinked(player.getUniqueId())) {
             player.sendMessage(Component.text("✗ ", NamedTextColor.RED, TextDecoration.BOLD)
                 .append(Component.text("Votre compte n'est pas lié à Discord.", NamedTextColor.RED)));
-            return true;
+            return;
         }
 
         boolean success = linkService.unlinkAccount(player.getUniqueId());
@@ -45,13 +70,66 @@ public class UnlinkCommand implements CommandExecutor {
             player.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GOLD, TextDecoration.BOLD));
             player.sendMessage(Component.empty());
             player.sendMessage(Component.text("Votre compte Minecraft a été délié de Discord.", NamedTextColor.GRAY));
-            player.sendMessage(Component.text("Vous pouvez le lier à nouveau avec /link", NamedTextColor.GRAY, TextDecoration.ITALIC));
+            player.sendMessage(Component.text("Vous devez vous reconnecter pour accéder au serveur.", NamedTextColor.YELLOW, TextDecoration.ITALIC));
             player.sendMessage(Component.empty());
+            
+            plugin.getConnectionListener().applyRestrictions(player);
         } else {
             player.sendMessage(Component.text("Une erreur est survenue lors de la suppression de la liaison.", NamedTextColor.RED));
         }
+    }
 
-        return true;
+    private void handleUnlinkOther(CommandSender sender, String playerName) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+        
+        if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
+            sender.sendMessage(Component.text("Le joueur '" + playerName + "' n'a jamais joué sur ce serveur.", NamedTextColor.RED));
+            return;
+        }
+
+        if (!linkService.isPlayerLinked(offlinePlayer.getUniqueId())) {
+            sender.sendMessage(Component.text("✗ ", NamedTextColor.RED, TextDecoration.BOLD)
+                .append(Component.text("Le compte de ", NamedTextColor.RED))
+                .append(Component.text(playerName, NamedTextColor.WHITE, TextDecoration.BOLD))
+                .append(Component.text(" n'est pas lié à Discord.", NamedTextColor.RED)));
+            return;
+        }
+
+        boolean success = linkService.unlinkAccount(offlinePlayer.getUniqueId());
+        
+        if (success) {
+            sender.sendMessage(Component.text("✓ ", NamedTextColor.GREEN, TextDecoration.BOLD)
+                .append(Component.text("Liaison supprimée pour ", NamedTextColor.GREEN))
+                .append(Component.text(playerName, NamedTextColor.WHITE, TextDecoration.BOLD)));
+            
+            Player onlinePlayer = Bukkit.getPlayer(offlinePlayer.getUniqueId());
+            if (onlinePlayer != null && onlinePlayer.isOnline()) {
+                onlinePlayer.sendMessage(Component.empty());
+                onlinePlayer.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GOLD, TextDecoration.BOLD));
+                onlinePlayer.sendMessage(Component.text("⚠ ", NamedTextColor.YELLOW, TextDecoration.BOLD)
+                    .append(Component.text("Liaison supprimée", NamedTextColor.YELLOW, TextDecoration.BOLD)));
+                onlinePlayer.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GOLD, TextDecoration.BOLD));
+                onlinePlayer.sendMessage(Component.empty());
+                onlinePlayer.sendMessage(Component.text("Votre compte a été délié par un administrateur.", NamedTextColor.GRAY));
+                onlinePlayer.sendMessage(Component.text("Vous devez vous reconnecter pour accéder au serveur.", NamedTextColor.YELLOW, TextDecoration.ITALIC));
+                onlinePlayer.sendMessage(Component.empty());
+                
+                plugin.getConnectionListener().applyRestrictions(onlinePlayer);
+            }
+        } else {
+            sender.sendMessage(Component.text("Une erreur est survenue lors de la suppression de la liaison.", NamedTextColor.RED));
+        }
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        List<String> completions = new ArrayList<>();
+        
+        if (args.length == 1 && PermissionManager.canUnlinkOthers(sender)) {
+            return null; // Return player names
+        }
+        
+        return completions;
     }
 }
 
