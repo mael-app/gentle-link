@@ -210,11 +210,6 @@ public class LinkCommand implements CommandExecutor, TabCompleter {
         }
         
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-        
-        if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
-            sender.sendMessage(Component.text("Le joueur '" + playerName + "' n'a jamais joué sur ce serveur.", NamedTextColor.RED));
-            return;
-        }
 
         UUID playerUuid = offlinePlayer.getUniqueId();
         

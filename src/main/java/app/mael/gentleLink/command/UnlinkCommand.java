@@ -83,11 +83,6 @@ public class UnlinkCommand implements CommandExecutor, TabCompleter {
 
     private void handleUnlinkOther(CommandSender sender, String playerName) {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-        
-        if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
-            sender.sendMessage(Component.text("Le joueur '" + playerName + "' n'a jamais joué sur ce serveur.", NamedTextColor.RED));
-            return;
-        }
 
         if (!linkService.isPlayerLinked(offlinePlayer.getUniqueId())) {
             sender.sendMessage(Component.text("✗ ", NamedTextColor.RED, TextDecoration.BOLD)
