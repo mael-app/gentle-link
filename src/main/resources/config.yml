@@ -13,8 +13,8 @@ database:
     password: password
 
 messages:
-  not_linked:
-    chat: |
+  kick:
+    not_linked: |
       <gold><bold>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</bold></gold>
       <yellow><bold>⚠ Compte Non Lié</bold></yellow>
       <gold><bold>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</bold></gold>
@@ -22,11 +22,14 @@ messages:
       <white>Vous devez lier votre compte Discord</white>
       <white>pour accéder au serveur.</white>
       
-      <gray>Utilisez la commande</gray> <green><bold>/link</bold></green>
+      <white>Votre code de liaison:</white>
+      <green><bold>{CODE}</bold></green>
+      
+      <gray>Utilisez ce code sur le serveur Discord</gray>
+      <gray>Code valide pendant 5 minutes</gray>
+      
+      <yellow>Reconnectez-vous après avoir validé le code</yellow>
       
       <gold><bold>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</bold></gold>
-    
-    title: "<red><bold>⚠ Compte Non Lié</bold></red>"
-    subtitle: "<yellow>Utilisez <green>/link</green> pour vous connecter</yellow>"
 
 

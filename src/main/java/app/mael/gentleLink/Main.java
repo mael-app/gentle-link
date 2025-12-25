@@ -14,7 +14,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class Main extends JavaPlugin {
     private DatabaseAdapter database;
     private LinkService linkService;
-    private PlayerConnectionListener connectionListener;
 
     @Override
     public void onEnable() {
@@ -78,14 +77,20 @@ public final class Main extends JavaPlugin {
 
     private void registerListeners() {
         FileConfiguration config = getConfig();
-        String chatMessage = config.getString("messages.not_linked.chat", 
-            "<red><bold>Vous devez lier votre compte Discord!</bold></red>\n<yellow>Utilisez /link</yellow>");
-        String titleMessage = config.getString("messages.not_linked.title", 
-            "<red><bold>Compte Non Lié</bold></red>");
-        String subtitleMessage = config.getString("messages.not_linked.subtitle", 
-            "<yellow>Utilisez /link pour continuer</yellow>");
+        String kickMessage = config.getString("messages.kick.not_linked", 
+            "<gold><bold>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</bold></gold>\n" +
+            "<yellow><bold>⚠ Compte Non Lié</bold></yellow>\n" +
+            "<gold><bold>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</bold></gold>\n\n" +
+            "<white>Vous devez lier votre compte Discord</white>\n" +
+            "<white>pour accéder au serveur.</white>\n\n" +
+            "<white>Votre code de liaison:</white>\n" +
+            "<green><bold>{CODE}</bold></green>\n\n" +
+            "<gray>Utilisez ce code sur le serveur Discord</gray>\n" +
+            "<gray>Code valide pendant 5 minutes</gray>\n\n" +
+            "<yellow>Reconnectez-vous après avoir validé le code</yellow>\n\n" +
+            "<gold><bold>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</bold></gold>");
         
-        connectionListener = new PlayerConnectionListener(linkService, chatMessage, titleMessage, subtitleMessage);
+        PlayerConnectionListener connectionListener = new PlayerConnectionListener(linkService, kickMessage);
         Bukkit.getPluginManager().registerEvents(connectionListener, this);
         
         getLogger().info("Listeners enregistrés avec succès.");
@@ -105,9 +110,5 @@ public final class Main extends JavaPlugin {
 
     public DatabaseAdapter getDatabase() {
         return database;
-    }
-
-    public PlayerConnectionListener getConnectionListener() {
-        return connectionListener;
     }
 }

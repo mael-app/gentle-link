@@ -35,17 +35,7 @@ public class LinkCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            if (!(sender instanceof Player player)) {
-                sender.sendMessage(Component.text("Cette commande doit être exécutée par un joueur.", NamedTextColor.RED));
-                return true;
-            }
-            
-            if (!PermissionManager.canLink(sender)) {
-                sender.sendMessage(Component.text("Vous n'avez pas la permission d'utiliser cette commande.", NamedTextColor.RED));
-                return true;
-            }
-            
-            handleLinkGeneration(player);
+            sender.sendMessage(Component.text("Usage: /link <info|list|bypass>", NamedTextColor.RED));
             return true;
         }
 
@@ -95,59 +85,6 @@ public class LinkCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private void handleLinkGeneration(Player player) {
-        if (linkService.isPlayerLinked(player.getUniqueId())) {
-            Optional<AccountLink> link = linkService.getAccountLink(player.getUniqueId());
-            
-            player.sendMessage(Component.empty());
-            player.sendMessage(Component.text("✗ ", NamedTextColor.RED, TextDecoration.BOLD)
-                .append(Component.text("Votre compte est déjà lié à Discord!", NamedTextColor.RED)));
-            
-            if (link.isPresent()) {
-                Component discordIdComponent = Component.text(link.get().discordId(), NamedTextColor.AQUA, TextDecoration.BOLD)
-                    .clickEvent(net.kyori.adventure.text.event.ClickEvent.copyToClipboard(link.get().discordId()))
-                    .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(
-                        Component.text("Cliquez pour copier", NamedTextColor.GRAY, TextDecoration.ITALIC)));
-                
-                player.sendMessage(Component.text("  Discord ID: ", NamedTextColor.GRAY)
-                    .append(discordIdComponent));
-            }
-            
-            player.sendMessage(Component.empty());
-            player.sendMessage(Component.text("Pour délier votre compte, utilisez ", NamedTextColor.YELLOW)
-                .append(Component.text("/unlink", NamedTextColor.GREEN, TextDecoration.BOLD)
-                    .clickEvent(net.kyori.adventure.text.event.ClickEvent.suggestCommand("/unlink"))
-                    .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(
-                        Component.text("Cliquez pour exécuter", NamedTextColor.GRAY, TextDecoration.ITALIC)))));
-            player.sendMessage(Component.empty());
-            return;
-        }
-
-        try {
-            String code = linkService.generateLinkCode(player.getUniqueId());
-            
-            Component codeComponent = Component.text(code, NamedTextColor.GREEN, TextDecoration.BOLD)
-                .clickEvent(net.kyori.adventure.text.event.ClickEvent.copyToClipboard(code))
-                .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(
-                    Component.text("Cliquez pour copier", NamedTextColor.GRAY, TextDecoration.ITALIC)));
-            
-            player.sendMessage(Component.empty());
-            player.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GOLD, TextDecoration.BOLD));
-            player.sendMessage(Component.text("  Liaison de compte Discord", NamedTextColor.YELLOW, TextDecoration.BOLD));
-            player.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GOLD, TextDecoration.BOLD));
-            player.sendMessage(Component.empty());
-            player.sendMessage(Component.text("Votre code de liaison:", NamedTextColor.WHITE));
-            player.sendMessage(Component.text("  ").append(codeComponent));
-            player.sendMessage(Component.text("  (Cliquez sur le code pour le copier)", NamedTextColor.GRAY, TextDecoration.ITALIC));
-            player.sendMessage(Component.empty());
-            player.sendMessage(Component.text("Ce code expire dans 5 minutes.", NamedTextColor.GRAY, TextDecoration.ITALIC));
-            player.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GOLD, TextDecoration.BOLD));
-            player.sendMessage(Component.empty());
-        } catch (IllegalStateException e) {
-            player.sendMessage(Component.text("✗ ", NamedTextColor.RED, TextDecoration.BOLD)
-                .append(Component.text(e.getMessage(), NamedTextColor.RED)));
-        }
-    }
 
     private void handleInfoSelf(Player player) {
         Optional<AccountLink> link = linkService.getAccountLink(player.getUniqueId());
@@ -298,8 +235,6 @@ public class LinkCommand implements CommandExecutor, TabCompleter {
             
             Player onlinePlayer = Bukkit.getPlayer(playerUuid);
             if (onlinePlayer != null && onlinePlayer.isOnline()) {
-                plugin.getConnectionListener().removeRestrictions(onlinePlayer);
-                
                 onlinePlayer.sendMessage(Component.empty());
                 onlinePlayer.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GOLD, TextDecoration.BOLD));
                 onlinePlayer.sendMessage(Component.text("✓ ", NamedTextColor.GREEN, TextDecoration.BOLD)

@@ -70,10 +70,12 @@ public class UnlinkCommand implements CommandExecutor, TabCompleter {
             player.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GOLD, TextDecoration.BOLD));
             player.sendMessage(Component.empty());
             player.sendMessage(Component.text("Votre compte Minecraft a été délié de Discord.", NamedTextColor.GRAY));
-            player.sendMessage(Component.text("Vous devez vous reconnecter pour accéder au serveur.", NamedTextColor.YELLOW, TextDecoration.ITALIC));
+            player.sendMessage(Component.text("Reconnectez-vous pour obtenir un nouveau code de liaison.", NamedTextColor.YELLOW, TextDecoration.ITALIC));
             player.sendMessage(Component.empty());
             
-            plugin.getConnectionListener().applyRestrictions(player);
+            Bukkit.getScheduler().runTask(plugin, () -> 
+                player.kick(Component.text("Compte délié. Reconnectez-vous pour obtenir votre code de liaison.", NamedTextColor.YELLOW))
+            );
         } else {
             player.sendMessage(Component.text("Une erreur est survenue lors de la suppression de la liaison.", NamedTextColor.RED));
         }
@@ -111,10 +113,12 @@ public class UnlinkCommand implements CommandExecutor, TabCompleter {
                 onlinePlayer.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GOLD, TextDecoration.BOLD));
                 onlinePlayer.sendMessage(Component.empty());
                 onlinePlayer.sendMessage(Component.text("Votre compte a été délié par un administrateur.", NamedTextColor.GRAY));
-                onlinePlayer.sendMessage(Component.text("Vous devez vous reconnecter pour accéder au serveur.", NamedTextColor.YELLOW, TextDecoration.ITALIC));
+                onlinePlayer.sendMessage(Component.text("Reconnectez-vous pour obtenir un nouveau code de liaison.", NamedTextColor.YELLOW, TextDecoration.ITALIC));
                 onlinePlayer.sendMessage(Component.empty());
                 
-                plugin.getConnectionListener().applyRestrictions(onlinePlayer);
+                Bukkit.getScheduler().runTask(plugin, () -> 
+                    onlinePlayer.kick(Component.text("Compte délié par un administrateur. Reconnectez-vous pour obtenir votre code de liaison.", NamedTextColor.YELLOW))
+                );
             }
         } else {
             sender.sendMessage(Component.text("Une erreur est survenue lors de la suppression de la liaison.", NamedTextColor.RED));
